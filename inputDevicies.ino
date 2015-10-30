@@ -51,12 +51,12 @@ void setup() {
   //DDRD |= B00000100; //d_76543210 d2=output, other not changed
   DDRD |= 1<<2; //d2=output, other not changed   
   Serial.begin(9600);
-  irrc.enableIRIn();
-  PORTD &= ~(1<<2); //d2 LOW
+  irrc.enableIRIn();  
 }
 
 void loop() {  
   irrcLoop();
+  currMillis = millis();
   if((currMillis - prevMillis)>ledDelay_ms){
     prevMillis = currMillis;
     led_red_blink();
@@ -80,7 +80,7 @@ void loop() {
 void irrcLoop(){
   if (irrc.decode(&irrcResult)) {      
     unsigned long irrcValue = irrcResult.value;
-    Serial.println(irrcResult.value, HEX);
+    //Serial.println(irrcResult.value, HEX);
     processIrrc(irrcResult.value);
     irrc.resume(); // Receive the next value
   }
@@ -149,7 +149,7 @@ void stateMachine_1h(){
 void led_red_blink(){
   //Serial.println(PORTD,BIN);
   byte currLed = bitRead(PORTD, 2);
-  //Serial.println(currLed,BIN);
+  Serial.println(currLed,BIN);
   if(currLed == 0b0){
     PORTD |= 1<<2; //d2 HIGH   
   }

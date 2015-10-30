@@ -17,22 +17,20 @@ B d8..d13
 #include <avr/pgmspace.h> //Store data in flash (program) memory instead of SRAM.
 
 //iremote pult buttons in DEC
-const uint16_t IRRC_0 = 1BC0157B;
-const uint16_t IRRC_1 = C101E57B;
-const uint16_t IRRC_2 = 97483BFB;
-const uint16_t IRRC_3 = F0C41643;
-const uint16_t IRRC_4 = 9716BE3F;
-const uint16_t IRRC_5 = 3D9AE3F7;
-const uint16_t IRRC_6 = 6182021B;
-const uint16_t IRRC_7 = 8C22657B;
-const uint16_t IRRC_8 = 488F3CBB;
-const uint16_t IRRC_9 = 449E79F;
-const uint16_t IRRC_UP = 511DBB;
-const uint16_t IRRC_DOWN = A3C8EDDB;
-const uint16_t IRRC_LEFT = 52A3D41F;
-const uint16_t IRRC_RIGHT = 20FE4DBB;
-
-
+const unsigned long IRRC_0 = 0x1BC0157B;
+const unsigned long IRRC_1 = 0xC101E57B;
+const unsigned long IRRC_2 = 0x97483BFB;
+const unsigned long IRRC_3 = 0xF0C41643;
+const unsigned long IRRC_4 = 0x9716BE3F;
+const unsigned long IRRC_5 = 0x3D9AE3F7;
+const unsigned long IRRC_6 = 0x6182021B;
+const unsigned long IRRC_7 = 0x8C22657B;
+const unsigned long IRRC_8 = 0x488F3CBB;
+const unsigned long IRRC_9 = 0x449E79F;
+const unsigned long IRRC_UP = 0x511DBB;
+const unsigned long IRRC_DOWN = 0xA3C8EDDB;
+const unsigned long IRRC_LEFT = 0x52A3D41F;
+const unsigned long IRRC_RIGHT = 0x20FE4DBB;
 
 uint8_t irrcPin = 4;
 IRrecv irrc(irrcPin);
@@ -47,6 +45,8 @@ unsigned long prevMillis_100ms;
 unsigned long prevMillis_1s;
 unsigned long prevMillis_1h;
 
+unsigned long prevMillis;
+
 void setup() {
   //DDRD |= B00000100; //d_76543210 d2=output, other not changed
   DDRD |= 1<<2; //d2=output, other not changed   
@@ -57,6 +57,10 @@ void setup() {
 
 void loop() {  
   irrcLoop();
+  if((currMillis - prevMillis)>ledDelay_ms){
+    prevMillis = currMillis;
+    led_red_blink();
+  }
   //stateMachine();
 
   //PORTD |= 1<<2; //d2 HIGH   
@@ -83,27 +87,35 @@ void irrcLoop(){
 }
 void processIrrc(unsigned long& irrcValue){  
   switch(irrcValue){
-  case IRRC_0:    
+  case IRRC_0:   
+    ledDelay_ms = 1000; 
     break;
-  case IRRC_1:
+  case IRRC_1:  
     ledDelay_ms = 100;
-    PORTD |= 1<<2; //d2 HIGH
     break;
-  case IRRC_2:    
+  case IRRC_2:  
+    ledDelay_ms = 200;  
     break;
-  case IRRC_3:    
+  case IRRC_3:   
+    ledDelay_ms = 300; 
     break;
-  case IRRC_4:    
+  case IRRC_4:  
+    ledDelay_ms = 400;  
     break;
   case IRRC_5:    
+    ledDelay_ms = 500;
     break;
-  case IRRC_6:    
+  case IRRC_6:   
+    ledDelay_ms = 600; 
     break;
-  case IRRC_7:    
+  case IRRC_7:  
+    ledDelay_ms = 700;  
     break;
   case IRRC_8:    
+    ledDelay_ms = 800;
     break;
-  case IRRC_9:    
+  case IRRC_9: 
+    ledDelay_ms = 900;  
     break;
   }
 }
@@ -133,24 +145,16 @@ void stateMachine_1s(){
 void stateMachine_1h(){
 
 }
-/*
+
 void led_red_blink(){
- //Serial.println(PORTD,BIN);
- byte currLed = bitRead(PORTD, 2);
- //Serial.println(currLed,BIN);
- if(currLed == 0b0){
- PORTD |= 1<<2; //d2 HIGH   
- }
- else{
- PORTD &= ~(1<<2); //d2 LOW
- }
- }
- */
-
-
-
-
-
-
-
+  //Serial.println(PORTD,BIN);
+  byte currLed = bitRead(PORTD, 2);
+  //Serial.println(currLed,BIN);
+  if(currLed == 0b0){
+    PORTD |= 1<<2; //d2 HIGH   
+  }
+  else{
+    PORTD &= ~(1<<2); //d2 LOW
+  }
+}
 
